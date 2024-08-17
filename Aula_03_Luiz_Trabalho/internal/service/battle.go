@@ -4,8 +4,8 @@ import (
 	"errors"
 
 
-	"RPG_AULA03/internal/entity"
-	"RPG_AULA03/internal/repository"
+	"AULA_03_LUIZ_TRABALHO/internal/entity"
+	"AULA_03_LUIZ_TRABALHO/internal/repository"
 )
 
 type BattleService struct {

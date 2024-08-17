@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"net/http"
-    "RPG_AULA03/internal/service"
+    "AULA_03_LUIZ_TRABALHO/internal/service"
 )
 
 type BattleHandler struct {

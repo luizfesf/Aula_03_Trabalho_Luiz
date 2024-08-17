@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"RPG_AULA03/internal/entity"
+	"AULA_03_LUIZ_TRABALHO/internal/entity"
 )
 
 type PlayerRepository struct {

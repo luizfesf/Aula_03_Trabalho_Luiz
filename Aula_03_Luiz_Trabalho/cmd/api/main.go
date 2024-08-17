@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"RPG_AULA03/internal/handler"
-	"RPG_AULA03/internal/repository"
-	"RPG_AULA03/internal/service"
+	"AULA_03_LUIZ_TRABALHO/internal/handler"
+	"AULA_03_LUIZ_TRABALHO/internal/repository"
+	"AULA_03_LUIZ_TRABALHO/internal/service"
 	_ "github.com/lib/pq"
 )
 

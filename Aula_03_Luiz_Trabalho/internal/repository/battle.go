@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"RPG_AULA03/internal/entity"
+	"AULA_03_LUIZ_TRABALHO/internal/entity"
 	"database/sql"
 )
 
