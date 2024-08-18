@@ -13,7 +13,7 @@ import (
 
 func main() {
 	// "postgresql://<username>:<password>@<database_ip>/todos?sslmode=disable"
-	dsn := "postgresql://postgres:root@localhost/postgres?sslmode=disable"
+	dsn := "postgresql://postgres:9674@localhost/postgres?sslmode=disable"
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
