@@ -30,22 +30,3 @@ func NewBattle(playerID, enemyID, playerName, enemyName string) *Battle {
 		DiceThrown: rand.Intn(6) + 1,
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

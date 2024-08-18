@@ -70,21 +70,3 @@ func (bs *BattleService) CreateBattle(playerNickname, enemyNickname string) (*en
 func (bs *BattleService) LoadBattles() ([]*entity.Battle, error) {
 	return bs.BattleRepository.LoadBattles()
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -16,15 +16,17 @@ func NewEnemyService(EnemyRepository repository.EnemyRepository) *EnemyService {
 	return &EnemyService{EnemyRepository: EnemyRepository}
 }
 
-func (es *EnemyService) AddEnemy(nickname string, life, attack int) (*entity.Enemy, error) {
-	if nickname == "" || life == 0 || attack == 0 {
-		return nil, errors.New("enemy nickname, life and attack is required")
+func (es *EnemyService) AddEnemy(nickname string, life, attack, defesa int) (*entity.Enemy, error) {
+	if nickname == "" || life == 0 || attack == 0 || defesa == 0{
+		return nil, errors.New("enemy nickname, life, attack and defesa is required")
 	}
 
 	if len(nickname) > 255 {
 		return nil, errors.New("enemy nickname cannot exceed 255 characters")
 	}
-
+    if defesa > 10 || defesa <= 0{
+		return nil, errors.New("enemy defesa must be between 1 and 10")
+	}
 	if attack > 10 || attack <= 0 {
 		return nil, errors.New("enemy attack must be between 1 and 10")
 	}
@@ -42,7 +44,7 @@ func (es *EnemyService) AddEnemy(nickname string, life, attack int) (*entity.Ene
 		return nil, errors.New("enemy nickname already exists")
 	}
 
-	enemy = entity.NewEnemy(nickname, life, attack)
+	enemy = entity.NewEnemy(nickname, life, attack, defesa)
 	if _, err := es.EnemyRepository.AddEnemy(enemy); err != nil {
 		fmt.Println(err)
 		return nil, errors.New("internal server error")
@@ -92,7 +94,7 @@ func (es *EnemyService) LoadEnemy(id string) (*entity.Enemy, error) {
 	return enemy, nil
 }
 
-func (es *EnemyService) SaveEnemy(id, nickname string, life, attack int) (*entity.Enemy, error) {
+func (es *EnemyService) SaveEnemy(id, nickname string, life, attack, defesa int) (*entity.Enemy, error) {
 	enemy, err := es.EnemyRepository.LoadEnemyById(id)
 
 	if err != nil {
@@ -123,6 +125,12 @@ func (es *EnemyService) SaveEnemy(id, nickname string, life, attack int) (*entit
 			return nil, errors.New("enemy attack must be between 1 and 10")
 		}
 		enemy.Attack = attack
+	}
+	if defesa != 0 && defesa != enemy.Defesa {
+		if defesa > 10 || defesa <= 0 {
+			return nil, errors.New("enemy defesa must be between 1 and 10")
+		}
+		enemy.Defesa = defesa
 	}
 
 	if life != 0 && life != enemy.Life {

@@ -27,7 +27,7 @@ func (ph *PlayerHandler) AddPlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := ph.PlayerService.AddPlayer(player.Nickname, player.Life, player.Attack)
+	result, err := ph.PlayerService.AddPlayer(player.Nickname, player.Life, player.Attack, player.Defesa)
 	if err != nil {
 		switch {
 		case strings.Contains(err.Error(), "internal server error"):
@@ -116,7 +116,7 @@ func (ph *PlayerHandler) SavePlayer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := ph.PlayerService.SavePlayer(id, player.Nickname, player.Life, player.Attack)
+	result, err := ph.PlayerService.SavePlayer(id, player.Nickname, player.Life, player.Attack, player.Defesa)
 	if err != nil {
 		switch {
 		case strings.Contains(err.Error(), "internal server error"):

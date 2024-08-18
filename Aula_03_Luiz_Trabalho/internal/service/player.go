@@ -16,8 +16,8 @@ func NewPlayerService(PlayerRepository repository.PlayerRepository) *PlayerServi
 	return &PlayerService{PlayerRepository: PlayerRepository}
 }
 
-func (ps *PlayerService) AddPlayer(nickname string, life, attack int) (*entity.Player, error) {
-	if nickname == "" || life == 0 || attack == 0 {
+func (ps *PlayerService) AddPlayer(nickname string, life, attack, defesa int) (*entity.Player, error) {
+	if nickname == "" || life == 0 || attack == 0 || defesa == 0 {
 		return nil, errors.New("player nickname, life and attack is required")
 	}
 
@@ -27,6 +27,11 @@ func (ps *PlayerService) AddPlayer(nickname string, life, attack int) (*entity.P
 
 	if attack > 10 || attack <= 0 {
 		return nil, errors.New("player attack must be between 1 and 10")
+	}
+
+	
+	if defesa > 10 || defesa <= 0 {
+		return nil, errors.New("player defesa must be between 1 and 10")
 	}
 
 	if life > 100 || life <= 0 {
@@ -42,7 +47,7 @@ func (ps *PlayerService) AddPlayer(nickname string, life, attack int) (*entity.P
 		return nil, errors.New("player nickname already exits")
 	}
 
-	player = entity.NewPlayer(nickname, life, attack)
+	player = entity.NewPlayer(nickname, life, attack, defesa )
 	if _, err := ps.PlayerRepository.AddPlayer(player); err != nil {
 		fmt.Println(err)
 		return nil, errors.New("internal server error")
@@ -92,7 +97,7 @@ func (ps *PlayerService) LoadPlayer(id string) (*entity.Player, error) {
 	return player, nil
 }
 
-func (ps *PlayerService) SavePlayer(id, nickname string, life, attack int) (*entity.Player, error) {
+func (ps *PlayerService) SavePlayer(id, nickname string, life, attack, defesa int) (*entity.Player, error) {
 	player, err := ps.PlayerRepository.LoadPlayerById(id)
 
 	if err != nil {
@@ -123,6 +128,12 @@ func (ps *PlayerService) SavePlayer(id, nickname string, life, attack int) (*ent
 			return nil, errors.New("player attack must be between 1 and 10")
 		}
 		player.Attack = attack
+	}
+	if defesa != 0 && defesa != player.Defesa {
+		if defesa > 10 || defesa  <= 0 {
+			return nil, errors.New("player attack must be between 1 and 10")
+		}
+		player.Defesa = defesa
 	}
 
 	if life != 0 && life != player.Life {
