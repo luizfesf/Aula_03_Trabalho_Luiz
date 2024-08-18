@@ -7,7 +7,7 @@ type Player struct {
 	Nickname string
 	Life     int
 	Attack   int
-	Defesa int
+	Defesa   int
 }
 
 func NewPlayer(nickname string, life, attack, defesa int) *Player {

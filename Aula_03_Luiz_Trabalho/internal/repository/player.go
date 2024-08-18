@@ -58,7 +58,7 @@ func (pr *PlayerRepository) LoadPlayerByNickname(nickname string) (*entity.Playe
 }
 
 func (pr *PlayerRepository) AddPlayer(player *entity.Player) (string, error) {
-	_, err := pr.db.Exec("INSERT INTO player (id, nickname, life, attack, defesa ) VALUES ($1, $2, $3, $4, $5)", player.ID, player.Nickname, player.Life, player.Attack, player.Defesa)
+	_, err := pr.db.Exec("INSERT INTO player (id, nickname, life, attack, defesa) VALUES ($1, $2, $3, $4, $5)", player.ID, player.Nickname, player.Life, player.Attack, player.Defesa)
 	if err != nil {
 		return "", err
 	}

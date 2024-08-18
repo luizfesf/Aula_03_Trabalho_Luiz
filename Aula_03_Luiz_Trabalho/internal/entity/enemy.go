@@ -18,4 +18,4 @@ func NewEnemy(nickname string, life, attack, defesa int) *Enemy {
 		Attack:   attack,
 		Defesa:   defesa,
 	}
-}
+}	
