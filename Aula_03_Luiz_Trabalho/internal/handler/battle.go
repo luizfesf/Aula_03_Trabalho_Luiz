@@ -1,53 +1,48 @@
 package handler
 
 import (
-	"encoding/json"
-	"net/http"
+    "encoding/json"
+    "net/http"
+
+    "AULA_03_LUIZ_TRABALHO/internal/entity"
     "AULA_03_LUIZ_TRABALHO/internal/service"
 )
 
 type BattleHandler struct {
-	BattleService *service.BattleService
+    BattleService *service.BattleService
 }
 
 func NewBattleHandler(battleService *service.BattleService) *BattleHandler {
-	return &BattleHandler{BattleService: battleService}
+    return &BattleHandler{BattleService: battleService}
 }
 
 func (bh *BattleHandler) CreateBattle(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+    var request struct {
+        Player string `json:"Player"`
+        Enemy  string `json:"Enemy"`
+    }
 
-	var request struct {
-		Player string `json:"player"`
-		Enemy  string `json:"enemy"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "internal server error"})
-		return
-	}
+    if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+        http.Error(w, "Invalid request body", http.StatusBadRequest)
+        return
+    }
 
-	battle, err := bh.BattleService.CreateBattle(request.Player, request.Enemy)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"message": err.Error()})
-		return
-	}
+    battle, result, err := bh.BattleService.CreateBattle(request.Player, request.Enemy)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(battle)
-}
+    response := struct {
+        Battle *entity.Battle `json:"battle"`
+        Result string         `json:"result"`
+    }{
+        Battle: battle,
+        Result: result,
+    }
 
-func (bh *BattleHandler) LoadBattles(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
-	battles, err := bh.BattleService.LoadBattles()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"message": "internal server error"})
-		return
-	}
-
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(battles)
+    w.Header().Set("Content-Type", "application/json")
+    if err := json.NewEncoder(w).Encode(response); err != nil {
+        http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+    }
 }

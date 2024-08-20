@@ -44,7 +44,7 @@ func main() {
 	mux.HandleFunc("GET /enemy/{id}", enemyHandler.LoadEnemy)
 	mux.HandleFunc("PUT /enemy/{id}", enemyHandler.SaveEnemy)
 	mux.HandleFunc("POST /battle", battleHandler.CreateBattle)
-	mux.HandleFunc("GET /battle", battleHandler.LoadBattles)
+	//mux.HandleFunc("GET /battle", battleHandler.LoadBattles)
 
 	fmt.Println("Server is running on port 8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
