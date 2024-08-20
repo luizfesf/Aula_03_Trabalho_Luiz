@@ -25,16 +25,16 @@ func NewBattleService(playerRepo repository.PlayerRepository, enemyRepo reposito
 func (bs *BattleService) CreateBattle(playerNickname, enemyNickname string) (*entity.Battle, string, error) {
 	player, err := bs.PlayerRepository.LoadPlayerByNickname(playerNickname)
 	if err != nil || player == nil {
-		return nil, "", errors.New("player not found")
+		return nil, "", errors.New("jogador não encontrado")
 	}
 
 	enemy, err := bs.EnemyRepository.LoadEnemyByNickname(enemyNickname)
 	if err != nil || enemy == nil {
-		return nil, "", errors.New("enemy not found")
+		return nil, "", errors.New("inimigo não encontrado")
 	}
 
 	if player.Life <= 0 || enemy.Life <= 0 {
-		return nil, "", errors.New("both player and enemy must have life > 0 to battle")
+		return nil, "", errors.New("tanto o jogador quanto o inimigo devem ter vida > 0 para batalhar")
 	}
 
 	battle := entity.NewBattle(player.ID, enemy.ID, player.Nickname, enemy.Nickname)
@@ -43,33 +43,67 @@ func (bs *BattleService) CreateBattle(playerNickname, enemyNickname string) (*en
 	var result string
 
 	if dice <= 3 {
-		player.Life -= enemy.Attack
+		// Calcular o dano considerando a defesa
+		damage := enemy.Attack - player.Defesa
+		if damage < 0 {
+			damage = 0
+		}
+		player.Life -= damage
 		if player.Life < 0 {
 			player.Life = 0
 		}
 		if err := bs.PlayerRepository.SavePlayer(player.ID, player); err != nil {
-			return nil, "", errors.New("failed to update player life")
+			return nil, "", errors.New("falha ao atualizar a vida do jogador")
 		}
-		result = "Enemy dealt damage"
+
+		// Result para o dano causado e dados do jogador
+		damageResult := "Inimigo atacou. Dano causado: " + strconv.Itoa(damage) +
+			" | Vida do Jogador: " + strconv.Itoa(player.Life) + 
+			" | Defesa do Jogador: " + strconv.Itoa(player.Defesa) +
+			" | Ataque do Inimigo: " + strconv.Itoa(enemy.Attack)
+
+		// Result para os dados do inimigo
+		enemyResult := "Dados do Inimigo: Vida: " + strconv.Itoa(enemy.Life) + 
+			" | Defesa: " + strconv.Itoa(enemy.Defesa) +
+			" | Ataque: " + strconv.Itoa(enemy.Attack)
+
+		result = damageResult + "\n" + enemyResult
 	} else {
-		enemy.Life -= player.Attack
+		// Calcular o dano considerando a defesa
+		damage := player.Attack - enemy.Defesa
+		if damage < 0 {
+			damage = 0
+		}
+		enemy.Life -= damage
 		if enemy.Life < 0 {
 			enemy.Life = 0
 		}
 		if err := bs.EnemyRepository.SaveEnemy(enemy.ID, enemy); err != nil {
-			return nil, "", errors.New("failed to update enemy life")
+			return nil, "", errors.New("falha ao atualizar a vida do inimigo")
 		}
-		result = "Player dealt damage"
+
+		// Result para o dano causado e dados do inimigo
+		damageResult := "Jogador atacou. Dano causado: " + strconv.Itoa(damage) +
+			" | Vida do Inimigo: " + strconv.Itoa(enemy.Life) +
+			" | Defesa do Inimigo: " + strconv.Itoa(enemy.Defesa) +
+			" | Ataque do Jogador: " + strconv.Itoa(player.Attack)
+
+		// Result para os dados do jogador
+		playerResult := "Dados do Jogador: Vida: " + strconv.Itoa(player.Life) +
+			" | Defesa: " + strconv.Itoa(player.Defesa) +
+			" | Ataque: " + strconv.Itoa(player.Attack)
+
+		result = damageResult + "\n" + playerResult
 	}
 
 	if player.Life == 0 {
-		battle.Result = "Enemy won"
-		result = "Enemy won the battle"
+		battle.Result = "Inimigo venceu"
+		result = "Inimigo venceu a batalha"
 	} else if enemy.Life == 0 {
-		battle.Result = "Player won"
-		result = "Player won the battle"
+		battle.Result = "Jogador venceu"
+		result = "Jogador venceu a batalha"
 	} else {
-		result += " | Player Life: " + strconv.Itoa(player.Life) + " | Enemy Life: " + strconv.Itoa(enemy.Life)
+		battle.Result = "A batalha continua"
 	}
 
 	if _, err := bs.BattleRepository.AddBattle(battle); err != nil {
