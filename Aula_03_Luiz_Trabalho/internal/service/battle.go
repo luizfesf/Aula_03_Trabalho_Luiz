@@ -40,10 +40,16 @@ func (bs *BattleService) CreateBattle(playerNickname, enemyNickname string) (*en
 	battle := entity.NewBattle(player.ID, enemy.ID, player.Nickname, enemy.Nickname)
 	dice := battle.DiceThrown
 
+	// Implementação da funcionalidade "Critical"
+	if dice == 6 {
+		player.Attack *= 2
+	} else if dice == 1 {
+		enemy.Attack *= 2
+	}
+
 	var result string
 
 	if dice <= 3 {
-		// Calcular o dano considerando a defesa
 		damage := enemy.Attack - player.Defesa
 		if damage < 0 {
 			damage = 0
@@ -55,19 +61,9 @@ func (bs *BattleService) CreateBattle(playerNickname, enemyNickname string) (*en
 		if err := bs.PlayerRepository.SavePlayer(player.ID, player); err != nil {
 			return nil, "", errors.New("falha ao atualizar a vida do jogador")
 		}
+		Danos := "Inimigo atacou. Dano causado: " + strconv.Itoa(damage)
 
-		// Result para o dano causado e dados do jogador
-		damageResult := "Inimigo atacou. Dano causado: " + strconv.Itoa(damage) +
-			" | Vida do Jogador: " + strconv.Itoa(player.Life) + 
-			" | Defesa do Jogador: " + strconv.Itoa(player.Defesa) +
-			" | Ataque do Inimigo: " + strconv.Itoa(enemy.Attack)
-
-		// Result para os dados do inimigo
-		enemyResult := "Dados do Inimigo: Vida: " + strconv.Itoa(enemy.Life) + 
-			" | Defesa: " + strconv.Itoa(enemy.Defesa) +
-			" | Ataque: " + strconv.Itoa(enemy.Attack)
-
-		result = damageResult + "\n" + enemyResult
+		result = Danos
 	} else {
 		// Calcular o dano considerando a defesa
 		damage := player.Attack - enemy.Defesa
@@ -83,7 +79,7 @@ func (bs *BattleService) CreateBattle(playerNickname, enemyNickname string) (*en
 		}
 
 		// Result para o dano causado e dados do inimigo
-		damageResult := "Jogador atacou. Dano causado: " + strconv.Itoa(damage) +
+		Danos := "Jogador atacou. Dano causado: " + strconv.Itoa(damage) +
 			" | Vida do Inimigo: " + strconv.Itoa(enemy.Life) +
 			" | Defesa do Inimigo: " + strconv.Itoa(enemy.Defesa) +
 			" | Ataque do Jogador: " + strconv.Itoa(player.Attack)
@@ -93,7 +89,7 @@ func (bs *BattleService) CreateBattle(playerNickname, enemyNickname string) (*en
 			" | Defesa: " + strconv.Itoa(player.Defesa) +
 			" | Ataque: " + strconv.Itoa(player.Attack)
 
-		result = damageResult + "\n" + playerResult
+		result = Danos + "\n" + playerResult
 	}
 
 	if player.Life == 0 {
